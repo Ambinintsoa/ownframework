@@ -13,6 +13,7 @@ import etu1864.framework.Mapping;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.stream.*;;
 public class FrontServlet extends  HttpServlet {
     HashMap<String,Mapping> mappingUrls;
     private String url ;
@@ -36,11 +37,11 @@ public class FrontServlet extends  HttpServlet {
     }
 public void doPost(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-        
         PrintWriter out = res.getWriter();
         for (Map.Entry<String,Mapping> entry : mappingUrls.entrySet()) {
-        out.println(entry.getKey()+"       "+entry.getValue().getClassName());
-        }
+            out.println(entry.getKey()+"       "+entry.getValue().getClassName());
+            }
+
     }
 
 }
