@@ -15,7 +15,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.stream.*;;
 public class FrontServlet extends  HttpServlet {
-    HashMap<String,Mapping> mappingUrls;
+    private HashMap<String,Mapping> mappingUrls;
     private String url ;
     public void init() throws ServletException {
         try {
