@@ -1,3 +1,4 @@
+package etu1864.framework;
 public class ModelView {
     private String view;
 
