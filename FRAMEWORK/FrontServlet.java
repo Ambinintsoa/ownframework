@@ -8,7 +8,7 @@ import jakarta.servlet.RequestDispatcher;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import scanner.Scan;
+import etu1864.scanner.Scan;
 import etu1864.framework.Mapping;
 import java.io.PrintWriter;
 import java.net.URL;

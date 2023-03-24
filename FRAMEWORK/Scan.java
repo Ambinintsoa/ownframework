@@ -1,4 +1,4 @@
-package scanner;
+package etu1864.scanner;
 import java.util.*;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.stream.*;
-import annotation.Urls;
+import etu1864.annotation.Urls;
 import etu1864.framework.Mapping;
 import java.io.*;
 import java.net.URL;
