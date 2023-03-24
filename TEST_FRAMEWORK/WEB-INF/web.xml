@@ -10,6 +10,11 @@
   <servlet>
     <servlet-name>processServlet</servlet-name>
     <servlet-class>etu1864.framework.servlet.FrontServlet</servlet-class>
+    <init-param>
+      <param-name>package_to_scan</param-name>
+      <param-value>/opt/tomcat/apache-tomcat-10.0.27/webapps/TEST_FRAMEWORK/WEB-INF/classes/</param-value>
+      <description>scan package here</description>
+  </init-param>
   </servlet>
 
 
