@@ -40,9 +40,9 @@ public class FrontServlet extends  HttpServlet {
             // for (Map.Entry<String,Mapping> entry : mappingUrls.entrySet()) {
             //     out.println(entry.getKey()+"       "+entry.getValue().getClassName());
             //     }
-                out.println(req.getRequestURI());
-                out.println( Utils.getInfo(req.getRequestURI(),req.getServletPath() )[0]);
-                String key = "/"+ Utils.getInfo(req.getRequestURI(),req.getServletPath() )[0];
+
+                out.println( req.getServletPath());
+                String key =  Utils.getInfo(req.getServletPath() );
                 if(mappingUrls.containsKey(key)){
                     Mapping map = mappingUrls.get(key);
                     Class<?> classe = Class.forName(map.getClassName());
@@ -66,9 +66,8 @@ public void doPost(HttpServletRequest req, HttpServletResponse res)
             // for (Map.Entry<String,Mapping> entry : mappingUrls.entrySet()) {
             //     out.println(entry.getKey()+"       "+entry.getValue().getClassName());
             //     }
-                out.println(req.getRequestURI());
-                out.println( Utils.getInfo(req.getRequestURI(),req.getServletPath() )[0]);
-                String key = "/"+ Utils.getInfo(req.getRequestURI(),req.getServletPath() )[0];
+                out.println(req.getServletPath() );
+                String key = Utils.getInfo(req.getServletPath() );
                 if(mappingUrls.containsKey(key)){
                     Mapping map = mappingUrls.get(key);
                     Class<?> classe = Class.forName(map.getClassName());
