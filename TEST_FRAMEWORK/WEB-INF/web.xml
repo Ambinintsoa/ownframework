@@ -20,7 +20,7 @@
 
   <servlet-mapping>
     <servlet-name>processServlet</servlet-name>
-      <url-pattern>/FrontServlet/*</url-pattern>
+      <url-pattern>/</url-pattern>
   </servlet-mapping>
 
 </web-app>

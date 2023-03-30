@@ -7,8 +7,6 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="FrontServlet/ddd" method="get">
-<input type="submit" value="valider">
-    </form>
+<div> coucou</div>
 </body>
 </html>
