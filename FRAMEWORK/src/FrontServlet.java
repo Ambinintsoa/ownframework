@@ -50,6 +50,9 @@ public class FrontServlet extends  HttpServlet {
                     out.print(((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView());
                     RequestDispatcher dis = req.getRequestDispatcher("/"+((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView());
                     dis.forward(req,res);
+                }else{
+                    RequestDispatcher dis = req.getRequestDispatcher("/index.jsp");
+                    dis.forward(req,res);
                 }
             
         } catch (Exception e) {

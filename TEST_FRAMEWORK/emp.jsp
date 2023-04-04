@@ -7,6 +7,8 @@
     <title>Document</title>
 </head>
 <body>
-<div> coucou</div>
+<center>
+    <h1>EMP.JSP:COUCOU</h1>
+</center>
 </body>
 </html>
