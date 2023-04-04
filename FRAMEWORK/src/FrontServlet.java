@@ -36,21 +36,28 @@ public class FrontServlet extends  HttpServlet {
     throws ServletException, IOException {
         PrintWriter out = res.getWriter();
         try {
-            
-            // for (Map.Entry<String,Mapping> entry : mappingUrls.entrySet()) {
-            //     out.println(entry.getKey()+"       "+entry.getValue().getClassName());
-            //     }
-
-                out.println( req.getServletPath());
-                String key =  Utils.getInfo(req.getServletPath() );
-                if(mappingUrls.containsKey(key)){
-                    Mapping map = mappingUrls.get(key);
-                    Class<?> classe = Class.forName(map.getClassName());
-                    Object created = classe.newInstance();
-                    out.print(((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView());
-                    RequestDispatcher dis = req.getRequestDispatcher("/"+((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView());
-                    dis.forward(req,res);
+            String key = Utils.getInfo(req.getServletPath() );
+            if(mappingUrls.containsKey(key)){
+                Mapping map = mappingUrls.get(key);
+                Class<?> classe = Class.forName(map.getClassName());
+                Object created = classe.newInstance();
+                Object model = created.getClass().getMethod(map.getMethod() ).invoke(created);
+                if(model instanceof ModelView){
+                    if( ((ModelView) model).getData() instanceof HashMap  ){
+                        HashMap<String,Object>data =   ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getData();    
+                        for (Map.Entry<String,Object> entry : data.entrySet()) {
+                            req.setAttribute(entry.getKey(),entry.getValue());
+                        }
+                    } 
+                    if( ((ModelView) model).getView() instanceof String  ){
+                       
+                    RequestDispatcher dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView()));
+                     dis.forward(req,res);
+                    }
                 }
+                
+            }
+            res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
             
         } catch (Exception e) {
             // TODO: handle 
@@ -62,21 +69,27 @@ public void doPost(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
         PrintWriter out = res.getWriter();
         try {
-            
-            // for (Map.Entry<String,Mapping> entry : mappingUrls.entrySet()) {
-            //     out.println(entry.getKey()+"       "+entry.getValue().getClassName());
-            //     }
-                out.println(req.getServletPath() );
-                String key = Utils.getInfo(req.getServletPath() );
-                if(mappingUrls.containsKey(key)){
-                    Mapping map = mappingUrls.get(key);
-                    Class<?> classe = Class.forName(map.getClassName());
-                    Object created = classe.newInstance();
-                    out.print(((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView());
-                    RequestDispatcher dis = req.getRequestDispatcher("/"+((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView());
+            String key = Utils.getInfo(req.getServletPath() );
+            if(mappingUrls.containsKey(key)){
+                Mapping map = mappingUrls.get(key);
+                Class<?> classe = Class.forName(map.getClassName());
+                Object created = classe.newInstance();
+                Object model = created.getClass().getMethod(map.getMethod() ).invoke(created);
+                if(model instanceof ModelView){
+                    if( ((ModelView) model).getData() instanceof HashMap  ){
+                        HashMap<String,Object>data =   ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getData();    
+                        for (Map.Entry<String,Object> entry : data.entrySet()) {
+                            req.setAttribute(entry.getKey(),entry.getValue());
+                        }
+                    } 
+                    if( ((ModelView) model).getView() instanceof String  ){
+                    RequestDispatcher dis = req.getRequestDispatcher(String.format("/%s", ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView()));
                      dis.forward(req,res);
+                    }
                 }
-            
+                
+            }
+            res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
         } catch (Exception e) {
             // TODO: handle 
             out.println(e);
