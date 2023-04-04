@@ -57,8 +57,7 @@ public class FrontServlet extends  HttpServlet {
                 }
                 
             }
-            RequestDispatcher dis = req.getRequestDispatcher("/error.jsp");
-            dis.forward(req,res);
+            res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
             
         } catch (Exception e) {
             // TODO: handle 
@@ -90,8 +89,7 @@ public void doPost(HttpServletRequest req, HttpServletResponse res)
                 }
                 
             }
-            RequestDispatcher dis = req.getRequestDispatcher("/error.jsp");
-            dis.forward(req,res);
+            res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
         } catch (Exception e) {
             // TODO: handle 
             out.println(e);
