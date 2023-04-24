@@ -25,7 +25,13 @@ public class Emp {
         v.setView("emp.jsp");
         return v;
     }
-
+    @Urls(name = "/save")
+    public ModelView save(){
+        ModelView v = new ModelView();
+        System.out.println(this.getName());
+        v.setView("emp.jsp");
+        return v;
+    }
     public String getName() {
         return name;
     }

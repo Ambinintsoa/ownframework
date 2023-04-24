@@ -36,28 +36,41 @@ public class FrontServlet extends  HttpServlet {
     throws ServletException, IOException {
         PrintWriter out = res.getWriter();
         try {
-            String key = Utils.getInfo(req.getServletPath() );
+            String key = Utils.getInfo(req.getServletPath());
+            
             if(mappingUrls.containsKey(key)){
                 Mapping map = mappingUrls.get(key);
                 Class<?> classe = Class.forName(map.getClassName());
                 Object created = classe.newInstance();
                 Object model = created.getClass().getMethod(map.getMethod() ).invoke(created);
                 if(model instanceof ModelView){
+                    Enumeration<String> ressources = req.getParameterNames();
+                    while (ressources.hasMoreElements()) {
+                        String ressource = ressources.nextElement();
+                        String[] values = req.getParameterValues(ressource);
+                        out.println(Utils.getSetter(ressource));
+                        created.getClass().getMethod(Utils.getSetter(ressource),String.class).invoke(created,values[0]);
+                        out.println(created.getClass().getMethod(Utils.getGetter(ressource)).invoke(created));
+                    }
                     if( ((ModelView) model).getData() instanceof HashMap  ){
-                        HashMap<String,Object>data =   ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getData();    
-                        for (Map.Entry<String,Object> entry : data.entrySet()) {
-                            req.setAttribute(entry.getKey(),entry.getValue());
-                        }
+                        HashMap<String,Object>data =   ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getData();
+                        if(data !=null )  {
+                            for (Map.Entry<String,Object> entry : data.entrySet()) {
+                                req.setAttribute(entry.getKey(),entry.getValue());
+                            }
+                        } 
+                        
                     } 
+                    
                     if( ((ModelView) model).getView() instanceof String  ){
                        
-                    RequestDispatcher dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView()));
-                     dis.forward(req,res);
+                    // RequestDispatcher dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView()));
+                    //  dis.forward(req,res);
                     }
                 }
                 
             }
-            res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
+            // res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
             
         } catch (Exception e) {
             // TODO: handle 
@@ -76,11 +89,22 @@ public void doPost(HttpServletRequest req, HttpServletResponse res)
                 Object created = classe.newInstance();
                 Object model = created.getClass().getMethod(map.getMethod() ).invoke(created);
                 if(model instanceof ModelView){
+                    Enumeration<String> ressources = req.getParameterNames();
+                    while (ressources.hasMoreElements()) {
+                        String ressource = ressources.nextElement();
+                        String[] values = req.getParameterValues(ressource);
+                        out.println(Utils.getSetter(ressource));
+                        created.getClass().getMethod(Utils.getSetter(ressource),String.class).invoke(created,values[0]);
+                        out.println(created.getClass().getMethod(Utils.getGetter(ressource)).invoke(created));
+                    }
                     if( ((ModelView) model).getData() instanceof HashMap  ){
-                        HashMap<String,Object>data =   ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getData();    
-                        for (Map.Entry<String,Object> entry : data.entrySet()) {
-                            req.setAttribute(entry.getKey(),entry.getValue());
-                        }
+                        HashMap<String,Object>data =   ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getData();
+                        if(data !=null )  {
+                            for (Map.Entry<String,Object> entry : data.entrySet()) {
+                                req.setAttribute(entry.getKey(),entry.getValue());
+                            }
+                        } 
+                        
                     } 
                     if( ((ModelView) model).getView() instanceof String  ){
                     RequestDispatcher dis = req.getRequestDispatcher(String.format("/%s", ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView()));
