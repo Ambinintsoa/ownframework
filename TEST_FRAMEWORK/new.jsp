@@ -1,3 +1,4 @@
+<%@page import="olona.Emp" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="save" method="get">
-        <input type="text" name="name">
-        <input type="number" name="age">
-        <input type="submit" value="valider">
-    </form>
+    <% Emp a = (Emp)request.getAttribute("employe"); %>
+    <h1>Hello <% out.print(a.getName());%>, nous savons que vous avez <%out.print(a.getAge()); %></h1>
 </body>
 </html>

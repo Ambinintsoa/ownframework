@@ -70,9 +70,10 @@ public class Scan {
     }
     
     public static void getUrlMatching(Class classe,HashMap<String,Mapping> datas){ //find url and method 
-    Mapping returns  = new Mapping();
+    
     for(Method f : classe.getDeclaredMethods()){ //take method's annotation
             if(f.getAnnotation(Urls.class)!=null){
+                Mapping returns  = new Mapping();
                 returns.setClassName(classe.getName());
                returns.setMethod(f.getName());
                datas.put(f.getAnnotation(Urls.class).name(),returns);

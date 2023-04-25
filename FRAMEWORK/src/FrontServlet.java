@@ -42,15 +42,21 @@ public void doPost(HttpServletRequest req, HttpServletResponse res)
     
 private  void excecutable(HttpServletRequest req, HttpServletResponse res)
 throws ServletException, IOException {
+
     PrintWriter out = res.getWriter();
+    for (Map.Entry<String,Mapping> entry : mappingUrls.entrySet()) {
+        out.println(entry.getKey()+"  "+entry.getValue().getMethod());
+    }
     try {
         String key = Utils.getInfo(req.getServletPath());
-        
+        out.print(key);
         if(mappingUrls.containsKey(key)){
+           out.println("yes");
             Mapping map = mappingUrls.get(key);
             Class<?> classe = Class.forName(map.getClassName());
             Object created = classe.newInstance();
             Object model = created.getClass().getMethod(map.getMethod() ).invoke(created);
+            out.println( map.getMethod());
             if(model instanceof ModelView){
                 Enumeration<String> ressources = req.getParameterNames();
                 while (ressources.hasMoreElements()) {
@@ -75,14 +81,14 @@ throws ServletException, IOException {
                 } 
                 
                 if( ((ModelView) model).getView() instanceof String  ){
-                   
-                // RequestDispatcher dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView()));
-                //  dis.forward(req,res);
+                  
+                RequestDispatcher dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView()));
+                 dis.forward(req,res);
                 }
             }
             
         }
-        // res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
+         res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
         
     } catch (Exception e) {
         // TODO: handle 

@@ -28,8 +28,9 @@ public class Emp {
     @Urls(name = "/save")
     public ModelView save(){
         ModelView v = new ModelView();
-        System.out.println(this.getName());
-        v.setView("emp.jsp");
+        v.setData(new HashMap<String,Object>());
+        v.addItem("employe", this);
+        v.setView("new.jsp");
         return v;
     }
     public String getName() {
