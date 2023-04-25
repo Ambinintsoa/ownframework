@@ -9,6 +9,7 @@
 <body>
     <form action="ddd" method="get">
         <input type="text" name="name">
+        <input type="number" name="age">
         <input type="submit" value="valider">
     </form>
 </body>

@@ -8,7 +8,7 @@ import etu1864.framework.ModelView;
 import java.util.ArrayList;
 public class Emp {
     private String name;
-    
+    private int age ;
     public Emp() {
     }
     public Emp(String name) {
@@ -38,5 +38,11 @@ public class Emp {
 
     public void setName(String name) {
         this.name = name;
+    }
+    public int getAge() {
+        return age;
+    }
+    public void setAge(int age) {
+        this.age = age;
     }
 }
