@@ -8,7 +8,7 @@ import etu1864.framework.ModelView;
 import java.util.ArrayList;
 public class Emp {
     private String name;
-    
+    private int age ;
     public Emp() {
     }
     public Emp(String name) {
@@ -25,12 +25,25 @@ public class Emp {
         v.setView("emp.jsp");
         return v;
     }
-
+    @Urls(name = "/save")
+    public ModelView save(){
+        ModelView v = new ModelView();
+        v.setData(new HashMap<String,Object>());
+        v.addItem("employe", this);
+        v.setView("new.jsp");
+        return v;
+    }
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+    public int getAge() {
+        return age;
+    }
+    public void setAge(int age) {
+        this.age = age;
     }
 }
