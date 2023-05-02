@@ -51,12 +51,13 @@ throws ServletException, IOException {
         String key = Utils.getInfo(req.getServletPath());
         out.print(key);
         if(mappingUrls.containsKey(key)){
-           out.println("yes");
             Mapping map = mappingUrls.get(key);
             Class<?> classe = Class.forName(map.getClassName());
             Object created = classe.newInstance();
+            out.println(Utils.method(created, map.getMethod()));
             Object model = created.getClass().getMethod(map.getMethod() ).invoke(created);
             out.println( map.getMethod());
+            
             if(model instanceof ModelView){
                 Enumeration<String> ressources = req.getParameterNames();
                 while (ressources.hasMoreElements()) {
@@ -76,19 +77,19 @@ throws ServletException, IOException {
                         for (Map.Entry<String,Object> entry : data.entrySet()) {
                             req.setAttribute(entry.getKey(),entry.getValue());
                         }
-                    } 
-                    
+                    }     
                 } 
+
                 
-                if( ((ModelView) model).getView() instanceof String  ){
+                // if( ((ModelView) model).getView() instanceof String  ){
                   
-                RequestDispatcher dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView()));
-                 dis.forward(req,res);
-                }
+                // RequestDispatcher dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) (created.getClass().getMethod(map.getMethod() ).invoke(created))).getView()));
+                //  dis.forward(req,res);
+                // }
             }
             
         }
-         res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
+        //  res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
         
     } catch (Exception e) {
         // TODO: handle 

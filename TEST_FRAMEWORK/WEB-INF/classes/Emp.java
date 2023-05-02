@@ -33,6 +33,14 @@ public class Emp {
         v.setView("new.jsp");
         return v;
     }
+    @Urls(name = "/saved")
+    public ModelView saved(int id){
+        ModelView v = new ModelView();
+        v.setData(new HashMap<String,Object>());
+        v.addItem("employe", this);
+        v.setView("new.jsp");
+        return v;
+    }
     public String getName() {
         return name;
     }
@@ -46,4 +54,5 @@ public class Emp {
     public void setAge(int age) {
         this.age = age;
     }
+    
 }

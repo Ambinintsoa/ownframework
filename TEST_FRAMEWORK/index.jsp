@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="save" method="get">
+    <form action="saved" method="get">
         <input type="text" name="name">
         <input type="number" name="age">
         <input type="submit" value="valider">

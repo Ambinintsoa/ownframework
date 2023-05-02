@@ -1,4 +1,5 @@
 package etu1864.framework.util;
+import java.lang.reflect.Method;
 import java.sql.Date;
 import java.util.ArrayList;
 public class Utils {
@@ -27,5 +28,25 @@ public class Utils {
             return Date.valueOf(value);
         }
         return value;
+    }
+    // public ArrayList<Class<?>> getAllArguments(Object obj ,String method){
+    //     ArrayList<Class<?>> classes = new ArrayList<>();
+    //     Method[] meth = obj.getClass().getDeclaredMethods();
+    //     for (int i = 0; i < meth.length; i++) {
+    //         if(meth[i].getName().compareTo(method)== 0){
+               
+    //         }
+    //     }
+    //     return classes;
+    // }
+    public static String method(Object obj , String methods){
+        Method[] meth = obj.getClass().getDeclaredMethods();
+        for (Method met : meth) {
+            if (met.getName().compareTo(methods)== 0){
+                return met.toGenericString();
+            }
+
+        }
+        return "not found";
     }
 }
