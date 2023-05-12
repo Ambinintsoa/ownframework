@@ -1,10 +1,21 @@
 package etu1864.framework.util;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 public class Utils {
     public static String getInfo(String url){
         return  url.split("\\?")[0];
+    }
+    public static  HashMap<String,String>  getParam(String url){
+        String[] pa = url.split("&");
+        HashMap<String,String> parameters = new HashMap<>();
+        for (int i =0;i< pa.length;i++){
+            if(pa[i].split("=").length >1)
+                parameters.put(pa[i].split("=")[0],pa[i].split("=")[1]);
+        }
+        return parameters;
     }
     public static String getSetter(String name){
         return "set"+name.substring(0, 1).toUpperCase()+name.substring(1);
@@ -29,16 +40,6 @@ public class Utils {
         }
         return value;
     }
-    // public ArrayList<Class<?>> getAllArguments(Object obj ,String method){
-    //     ArrayList<Class<?>> classes = new ArrayList<>();
-    //     Method[] meth = obj.getClass().getDeclaredMethods();
-    //     for (int i = 0; i < meth.length; i++) {
-    //         if(meth[i].getName().compareTo(method)== 0){
-               
-    //         }
-    //     }
-    //     return classes;
-    // }
     public static String method(Object obj , String methods){
         Method[] meth = obj.getClass().getDeclaredMethods();
         for (Method met : meth) {
@@ -48,5 +49,8 @@ public class Utils {
 
         }
         return "not found";
+    }
+    public static String[] get_arguments(String arguments){
+        return arguments.split(" ");
     }
 }

@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Urls {
     public String name() default "";
+    public String arguments() default "";
 }

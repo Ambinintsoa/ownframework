@@ -9,7 +9,7 @@
 <body>
     <form action="saved" method="get">
         <input type="text" name="name">
-        <input type="number" name="age">
+        <input type="number" name="id">
         <input type="submit" value="valider">
     </form>
 </body>

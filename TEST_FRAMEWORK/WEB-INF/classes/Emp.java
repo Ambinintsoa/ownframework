@@ -33,12 +33,14 @@ public class Emp {
         v.setView("new.jsp");
         return v;
     }
-    @Urls(name = "/saved")
-    public ModelView saved(int id){
+    @Urls(name = "/saved" , arguments = "id")
+    public ModelView saved(Integer id){
         ModelView v = new ModelView();
         v.setData(new HashMap<String,Object>());
-        v.addItem("employe", this);
-        v.setView("new.jsp");
+        ArrayList<Emp> a = new ArrayList<Emp>();
+        a.add(new Emp("jeanne"));
+        v.addItem("dg",a);
+        v.setView("emp.jsp");
         return v;
     }
     public String getName() {
