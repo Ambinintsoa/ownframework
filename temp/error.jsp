@@ -7,10 +7,10 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="ddd" method="get">
-        <input type="text" name="name">
-        <input type="number" name="id">
-        <input type="submit" value="valider">
-    </form>
+
+    <center>
+        <h1>PAGE D'ERREUR LIEN NON-TROUVE</h1>
+    </center>
+
 </body>
 </html>

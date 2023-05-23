@@ -16,15 +16,10 @@ import java.net.URL;
 public class Scan {
 
     public static void initUrls(String packageName,HashMap<String,Mapping> datas) throws Exception {
-            File fi = new File(packageName);
-            File[] list = fi.listFiles();
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             List<Class<?>> classes = new LinkedList<>();
-            for(File file : list){
-                if(file.isDirectory()){
                     try {
-                        String path =file.getPath().split(packageName)[1];
-                        Enumeration<URL> resources = classLoader.getResources(path);
+                        Enumeration<URL> resources = classLoader.getResources(packageName);
                         List<File> dirs = new LinkedList<>();
                         while (resources.hasMoreElements()) {
                             URL resource = resources.nextElement();
@@ -32,14 +27,12 @@ public class Scan {
                         }
                         
                         for (File directory : dirs) {
-                            classes.addAll(findClasses(directory, path,datas));
+                            classes.addAll(findClasses(directory, packageName,datas));
                         }   
                     } catch (Exception e) {
                         // TODO: handle exception
                         throw e;
                     }
-                }
-            }
     }
 
     private static List<Class<?>> findClasses(File directory, String packageName,HashMap<String,Mapping> datas) throws ClassNotFoundException {
