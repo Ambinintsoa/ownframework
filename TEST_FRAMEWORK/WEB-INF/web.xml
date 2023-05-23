@@ -20,7 +20,7 @@
 
   <servlet-mapping>
     <servlet-name>processServlet</servlet-name>
-      <url-pattern>/</url-pattern>
+      <url-pattern>*.fn</url-pattern>
   </servlet-mapping>
 
 </web-app>

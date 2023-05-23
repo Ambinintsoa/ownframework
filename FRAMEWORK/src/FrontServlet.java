@@ -48,6 +48,7 @@ throws ServletException, IOException {
     PrintWriter out = res.getWriter();
     try {
         String key = Utils.getInfo(req.getServletPath());
+        out.println(key);
         if(mappingUrls.containsKey(key)){
             Mapping map = mappingUrls.get(key);
             Class<?> classe = Class.forName(map.getClassName());
@@ -106,7 +107,7 @@ throws ServletException, IOException {
                     RequestDispatcher dis = null; 
                          dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) model).getView()));
                   
-                   dis.forward(req,res);
+                  dis.forward(req,res);
                 }
             }
             
