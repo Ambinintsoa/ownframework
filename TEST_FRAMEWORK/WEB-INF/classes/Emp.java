@@ -15,7 +15,7 @@ public class Emp {
         this.name = name;
     }
 
-    @Urls(name = "/ddd")
+    @Urls(name = "/ddd.fn")
     public ModelView bidon(){
         ModelView v = new ModelView();
         v.setData(new HashMap<String,Object>());
@@ -25,7 +25,7 @@ public class Emp {
         v.setView("emp.jsp");
         return v;
     }
-    @Urls(name = "/save")
+    @Urls(name = "/save.fn")
     public ModelView save(){
         ModelView v = new ModelView();
         v.setData(new HashMap<String,Object>());
@@ -33,7 +33,7 @@ public class Emp {
         v.setView("new.jsp");
         return v;
     }
-    @Urls(name = "/saved" )
+    @Urls(name = "/saved.fn" )
     @Arguments(arguments = {"id","name"})
     public ModelView saved(Integer id,String name){
         ModelView v = new ModelView();

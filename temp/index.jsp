@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="ddd" method="get">
+    <form action="ddd.fn" method="get">
         <input type="text" name="name">
         <input type="number" name="id">
         <input type="submit" value="valider">
