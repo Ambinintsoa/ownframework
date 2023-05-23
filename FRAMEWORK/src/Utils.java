@@ -50,7 +50,4 @@ public class Utils {
         }
         return "not found";
     }
-    public static String[] get_arguments(String arguments){
-        return arguments.split(" ");
-    }
 }
