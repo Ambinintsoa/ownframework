@@ -5,10 +5,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.RequestDispatcher;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.*;
 import etu1864.scanner.Scan;
+import etu1864.framework.FileUpload;
 import etu1864.framework.Mapping;
 import etu1864.framework.ModelView;
 import etu1864.framework.util.Utils;
@@ -18,7 +22,12 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.stream.*;
-import org.ietf.jgss.Oid;;
+import org.ietf.jgss.Oid;
+import java.io.*;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.*;
+import etu1864.framework.*;
+@MultipartConfig
 public class FrontServlet extends  HttpServlet {
     private HashMap<String,Mapping> mappingUrls;
     private String url ;
@@ -46,28 +55,65 @@ private  void excecutable(HttpServletRequest req, HttpServletResponse res)
 throws ServletException, IOException {
 
     PrintWriter out = res.getWriter();
+    OutputStream outs = null;
+    InputStream fileContent = null;
     try {
         String key = Utils.getInfo(req.getServletPath());
         out.println(key);
         if(mappingUrls.containsKey(key)){
+            Collection<Part> val = null;
             Mapping map = mappingUrls.get(key);
             Class<?> classe = Class.forName(map.getClassName());
             Object created = classe.newInstance();
-            HashMap<String,String> param = Utils.getParam(req.getQueryString()); 
             Object model  = null;
+            String[] values = null;
             Enumeration<String> ressources = req.getParameterNames();
-            while (ressources.hasMoreElements()) {
-                String ressource = ressources.nextElement();
-                String[] values = req.getParameterValues(ressource);
-                Method[] methods = created.getClass().getDeclaredMethods();
-                    //initialize all atrributes
-                    for (int i = 0; i < methods.length; i++) {
-                        if(methods[i].getName().compareTo(Utils.getSetter(ressource))==0 && methods[i].getParameterTypes().length == 1){
-                            created.getClass().getMethod(Utils.getSetter(ressource),methods[i].getParameterTypes()[0]).invoke(created,Utils.transform(values[0], methods[i].getParameterTypes()[0]));
-                        }
-                    }
+            if(isMutipart(req)){
+                values = new String[1];
             }
-            //initialize arggument
+                while (ressources.hasMoreElements()) {
+                    String ressource = ressources.nextElement();
+                    Method[] methods = created.getClass().getDeclaredMethods();
+                        //initialize all atrributes 
+                    Field[] fields = created.getClass().getDeclaredFields();
+                        for (int i = 0; i < fields.length; i++){
+                            if(fields[i].getType().getSimpleName().compareToIgnoreCase("FileUpload")==0 && isMutipart(req) ){
+                                Part file = req.getPart(fields[i].getName());
+                                String savePath = this.getInitParameter("upload_directory").toString() + getFileName(file);
+    
+                                // Save the file to the specified location
+
+
+                                    outs = new FileOutputStream(new File(savePath));
+                                    fileContent = file.getInputStream();
+                                    
+                                    int read;
+                                    byte[] buffer = new byte[1024];
+                                    while ((read = fileContent.read(buffer)) != -1) {
+                                        outs.write(buffer, 0, read);
+                                    }
+                                    outs.flush();
+                                    outs.close();
+   
+                                //instantiantion de la valeur de l'attribut de type fileupload
+                                FileUpload fil= new FileUpload();
+                                fil.setFilename(getFileName(file));
+                                fil.setFile(file.getInputStream().readAllBytes());
+                                created.getClass().getMethod(Utils.getSetter(fields[i].getName()),FileUpload.class).invoke(created,fil);
+                            }
+                        }
+                        for (int i = 0; i < methods.length; i++){
+                            if(methods[i].getName().compareTo(Utils.getSetter(ressource))==0 && methods[i].getParameterTypes().length == 1){
+                                if(methods[i].getParameterTypes()[0].getSimpleName().compareToIgnoreCase("FileUpload")!=0 ){
+                                    values = req.getParameterValues(ressource);
+                                    
+                                    created.getClass().getMethod(Utils.getSetter(ressource),methods[i].getParameterTypes()[0]).invoke(created,Utils.transform(values[0], methods[i].getParameterTypes()[0]));
+                                }
+                             }
+                        }
+                }
+
+            //initialize argument
             Object[] obj = null;
             for (int i = 0; i < created.getClass().getDeclaredMethods().length; i++) {
                 if (map.getMethod().compareToIgnoreCase(created.getClass().getDeclaredMethods()[i].getName())== 0)
@@ -112,13 +158,38 @@ throws ServletException, IOException {
             }
             
         }
-           res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
+          res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
         
     } catch (Exception e) {
         // TODO: handle 
         out.println(e);
     }
+    finally {
+        if (outs != null) {
+            outs.close();
+        }
+        if (fileContent != null) {
+            fileContent.close();
+        }
+    }
 }
 
+    private boolean isMutipart(HttpServletRequest req ){
+        String content = req.getContentType();
+        if(content !=null &&  content.startsWith("multipart/form-data")){
+            return true;
+        }else{
+            return false;
+        }
+    }
+public String getFileName(Part part) {
+    String contentDisposition = part.getHeader("content-disposition");
+    String[] tokens = contentDisposition.split(";");
+    for (String token : tokens) {
+        if (token.trim().startsWith("filename")) {
+            return token.substring(token.indexOf("=") + 2, token.length() - 1);
+        }
+    }
+    return "";
 }
-
+}

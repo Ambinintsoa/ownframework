@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import etu1864.annotation.*;
+import etu1864.framework.FileUpload;
 import etu1864.framework.ModelView;
 import java.util.ArrayList;
 public class Emp {
     private String name;
     private int age ;
+    private FileUpload fi;
     public Emp() {
     }
     public Emp(String name) {
@@ -20,8 +22,9 @@ public class Emp {
         ModelView v = new ModelView();
         v.setData(new HashMap<String,Object>());
         ArrayList<Emp> a = new ArrayList<Emp>();
-        a.add(new Emp("jean"));
+        a.add(new Emp(this.getName()));
         v.addItem("dg",a);
+        v.addItem("file", this.getFi());
         v.setView("emp.jsp");
         return v;
     }
@@ -56,6 +59,12 @@ public class Emp {
     }
     public void setAge(int age) {
         this.age = age;
+    }
+    public FileUpload getFi() {
+        return fi;
+    }
+    public void setFi(FileUpload file) {
+        this.fi = file;
     }
     
 }

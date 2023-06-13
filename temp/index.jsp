@@ -7,9 +7,10 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="ddd.fn" method="get">
+    <form action="ddd.fn" method="post" enctype="multipart/form-data">
         <input type="text" name="name">
-        <input type="number" name="id">
+        <input type="number" name="age">
+        <input type="file" name="fi" id="file">
         <input type="submit" value="valider">
     </form>
 </body>
