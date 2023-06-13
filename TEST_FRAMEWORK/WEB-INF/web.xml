@@ -15,6 +15,11 @@
       <param-value>olona</param-value>
       <description>scan package here</description>
   </init-param>
+      <init-param>
+      <param-name>upload_directory</param-name>
+      <param-value>/opt/tomcat/upload/</param-value>
+      <description>all files are upload here</description>
+  </init-param>
   </servlet>
 
 
