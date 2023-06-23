@@ -30,12 +30,14 @@ import etu1864.framework.*;
 @MultipartConfig
 public class FrontServlet extends  HttpServlet {
     private HashMap<String,Mapping> mappingUrls;
+    private HashMap<String,Object> singleton;
     private String url ;
     public void init() throws ServletException {
         try {
             mappingUrls = new HashMap<>();
+            singleton = new HashMap<>();
             url = this.getInitParameter("package_to_scan").toString();
-            Scan.initUrls(url,mappingUrls);
+            Scan.initUrls(url,mappingUrls,singleton);
         } catch (Exception e) {
             // TODO: handle exception
         }
@@ -58,13 +60,22 @@ throws ServletException, IOException {
     OutputStream outs = null;
     InputStream fileContent = null;
     try {
+        // out.println(singleton.get("Emp"));
+
         String key = Utils.getInfo(req.getServletPath());
         out.println(key);
         if(mappingUrls.containsKey(key)){
             Collection<Part> val = null;
             Mapping map = mappingUrls.get(key);
             Class<?> classe = Class.forName(map.getClassName());
-            Object created = classe.newInstance();
+            Object created = null;
+            out.print("aaa");
+            if(reinitialize(classe.getSimpleName())==false){
+                 created = classe.newInstance();
+            }else{
+                created = singleton.get(classe.getSimpleName());
+            }
+            out.print(created);
             Object model  = null;
             String[] values = null;
             Enumeration<String> ressources = req.getParameterNames();
@@ -100,6 +111,7 @@ throws ServletException, IOException {
                                 fil.setFilename(getFileName(file));
                                 fil.setFile(file.getInputStream().readAllBytes());
                                 created.getClass().getMethod(Utils.getSetter(fields[i].getName()),FileUpload.class).invoke(created,fil);
+                                break;
                             }
                         }
                         for (int i = 0; i < methods.length; i++){
@@ -153,7 +165,7 @@ throws ServletException, IOException {
                     RequestDispatcher dis = null; 
                          dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) model).getView()));
                   
-                  dis.forward(req,res);
+                 dis.forward(req,res);
                 }
             }
             
@@ -191,5 +203,31 @@ public String getFileName(Part part) {
         }
     }
     return "";
+}
+private void reset(Object obj )throws Exception{
+    Method[] methods = obj.getClass().getDeclaredMethods();
+    Field[] fields = obj.getClass().getDeclaredFields();
+    for (int i = 0; i < methods.length; i++) {
+        for (int j = 0; j < fields.length; j++) {
+            if(methods[i].getName().compareToIgnoreCase(Utils.getSetter(fields[j].getName()))==0){
+                methods[i].invoke(obj,Utils.transform(null, methods[i].getParameterTypes()[0]));
+            }
+        }
+        
+    }
+}
+private boolean reinitialize(String name)throws Exception{
+    Object obj = singleton.get(name);
+    if(obj!=null){
+        try {
+            reset(obj);
+        } catch (Exception e) {
+            // TODO: handle exception
+            throw e;
+        }
+        
+        return true;
+    }
+    return false;
 }
 }
