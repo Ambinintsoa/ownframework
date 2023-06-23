@@ -7,9 +7,11 @@ import etu1864.annotation.*;
 import etu1864.framework.FileUpload;
 import etu1864.framework.ModelView;
 import java.util.ArrayList;
+import etu1864.annotation.Scope;
+@Scope(singleton = true)
 public class Emp {
     private String name;
-    private int age ;
+    // private int age ;
     private FileUpload fi;
     public Emp() {
     }
@@ -54,12 +56,12 @@ public class Emp {
     public void setName(String name) {
         this.name = name;
     }
-    public int getAge() {
-        return age;
-    }
-    public void setAge(int age) {
-        this.age = age;
-    }
+    // public int getAge() {
+    //     return age;
+    // }
+    // public void setAge(int age) {
+    //     this.age = age;
+    // }
     public FileUpload getFi() {
         return fi;
     }
