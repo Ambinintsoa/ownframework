@@ -165,12 +165,12 @@ throws ServletException, IOException {
                     RequestDispatcher dis = null; 
                          dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) model).getView()));
                   
-                //   dis.forward(req,res);
+                 dis.forward(req,res);
                 }
             }
             
         }
-        //   res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
+          res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
         
     } catch (Exception e) {
         // TODO: handle 
