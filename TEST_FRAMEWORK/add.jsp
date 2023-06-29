@@ -1,4 +1,3 @@
-<%@page import="java.util.*,olona.Emp,etu1864.framework.FileUpload" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +7,11 @@
     <title>Document</title>
 </head>
 <body>
-<center>
-    <h1>COUCOU EVERYBODY</h1>
-</center>
+    <form action="ddd.fn" method="post" enctype="multipart/form-data">
+        <input type="text" name="name">
+        <input type="number" name="age">
+        <input type="file" name="fi" id="file">
+        <input type="submit" value="valider">
+    </form>
 </body>
 </html>
