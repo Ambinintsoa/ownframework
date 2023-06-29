@@ -7,7 +7,7 @@ import etu1864.annotation.*;
 import etu1864.framework.FileUpload;
 import etu1864.framework.ModelView;
 import java.util.ArrayList;
-import etu1864.annotation.Scope;
+import etu1864.annotation.*;
 @Scope(singleton = true)
 public class Emp {
     private String name;
@@ -20,6 +20,7 @@ public class Emp {
     }
 
     @Urls(name = "/ddd.fn")
+    @Auth(profile = "admin")
     public ModelView bidon(){
         ModelView v = new ModelView();
         v.setData(new HashMap<String,Object>());
@@ -67,6 +68,17 @@ public class Emp {
     }
     public void setFi(FileUpload file) {
         this.fi = file;
+    }
+    @Urls(name = "/log_in.fn" )
+    @Arguments(arguments = {"name","password"})
+    public ModelView log_in(String name,String password){
+        ModelView mv = new ModelView();
+        mv.setSession(new HashMap<String,Object>());
+        mv.addSession("isConnected", true);
+        mv.addSession("profile", "admin");
+        mv.addSession("name", name);
+        mv.setView("emp.jsp");
+        return mv;
     }
     
 }

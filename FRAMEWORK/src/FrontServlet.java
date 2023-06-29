@@ -127,50 +127,78 @@ throws ServletException, IOException {
 
             //initialize argument
             Object[] obj = null;
+            boolean identification = true;
             for (int i = 0; i < created.getClass().getDeclaredMethods().length; i++) {
-                if (map.getMethod().compareToIgnoreCase(created.getClass().getDeclaredMethods()[i].getName())== 0)
+                if (map.getMethod().compareToIgnoreCase(created.getClass().getDeclaredMethods()[i].getName())== 0  )
                 {
-                    if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class)!=null){
-                        String[] args =created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class).arguments();
-                        obj = new Object[args.length];
-                                    for (int index = 0; index < args.length; index++) {
-                                        if(req.getParameter(args[index])!=null){
-                                            obj[index] = Utils.transform(req.getParameter(args[index]), created.getClass().getDeclaredMethods()[i].getParameters()[index].getType());
-                                        }
-                                    }
-                                    out.println(created.getClass().getDeclaredMethods()[i]);
-                                    Method met = created.getClass().getDeclaredMethods()[i];
-                                    met.setAccessible(true);
-                                    model = met.invoke(created, obj);
-    
-                     }else{
-                        model= created.getClass().getMethod(map.getMethod()).invoke(created);
+                    if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class) !=null){
+                        if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase( req.getSession().getAttribute("profile").toString())!=0 && created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase("ano")!=0    ){
+                            identification = false;
+                        }
+                        if( req.getSession().getAttribute("isConnected") == null ||  req.getSession().getAttribute("isConnected") == "false"){
+                            identification = false;
+                        }
+                        // out.print(req.getSession().getAttribute("isConnected") );
+                        // out.print(req.getSession().getAttribute("profile") );
+                        // out.print(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile());
                     }
+                    if(identification == true){
+                        if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class)!=null){
+                            String[] args =created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class).arguments();
+                            obj = new Object[args.length];
+                                        for (int index = 0; index < args.length; index++) {
+                                            if(req.getParameter(args[index])!=null){
+                                                obj[index] = Utils.transform(req.getParameter(args[index]), created.getClass().getDeclaredMethods()[i].getParameters()[index].getType());
+                                            }
+                                        }
+                                        out.println(created.getClass().getDeclaredMethods()[i]);
+                                        Method met = created.getClass().getDeclaredMethods()[i];
+                                        met.setAccessible(true);
+    
+                                                model = met.invoke(created, obj);
+                                            
+    
+                                        
+        
+                         }else{
+                            model= created.getClass().getMethod(map.getMethod()).invoke(created);
+                        }
+                    
+                        if(model instanceof ModelView){
 
-                }
-            }
-            if(model instanceof ModelView){
-
-                if( ((ModelView) model).getData() instanceof HashMap  ){
-                        HashMap<String,Object>data =   ((ModelView) model).getData();
-                        if(data !=null )  {
-                            for (Map.Entry<String,Object> entry : data.entrySet()) {
-                                req.setAttribute(entry.getKey(),entry.getValue());
+                            if( ((ModelView) model).getData() instanceof HashMap  ){
+                                    HashMap<String,Object>data =   ((ModelView) model).getData();
+                                    if(data !=null )  {
+                                        for (Map.Entry<String,Object> entry : data.entrySet()) {
+                                            req.setAttribute(entry.getKey(),entry.getValue());
+                                        }
+                                    } 
+                            } 
+                            if( ((ModelView) model).getSession() instanceof HashMap  ){
+                                HashMap<String,Object>session =   ((ModelView) model).getSession();
+                                if(session !=null )  {
+                                    HttpSession session_request = req.getSession();
+                                    for (Map.Entry<String,Object> entry : session.entrySet()) {
+                                        session_request.setAttribute(entry.getKey(),entry.getValue());
+                                    }
+                                } 
                             }
-                        } 
-                } 
+                            
+                            if( ((ModelView) model).getView() instanceof String  ){
+                                RequestDispatcher dis = null; 
+                                     dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) model).getView()));
+                              
+                             dis.forward(req,res);
+                            }
+                        }
 
-                
-                if( ((ModelView) model).getView() instanceof String  ){
-                    RequestDispatcher dis = null; 
-                         dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) model).getView()));
-                  
-                 dis.forward(req,res);
                 }
             }
+
+        }
             
         }
-          res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
+           res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
         
     } catch (Exception e) {
         // TODO: handle 
