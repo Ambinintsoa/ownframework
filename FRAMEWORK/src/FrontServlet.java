@@ -191,7 +191,7 @@ throws ServletException, IOException {
                             if( ((ModelView) model).getData() instanceof HashMap  ){
                                     HashMap<String,Object>data =   ((ModelView) model).getData();
                                     if(data !=null )  {
-                                        if(met.getDeclaredAnnotation(Json.class) !=null){
+                                        if((boolean)((ModelView) model).isJson() ==true){
                                             res.setContentType("application/json;charset=UTF-8");
                                             out = res.getWriter();
                                             Gson j = new Gson();
@@ -214,10 +214,18 @@ throws ServletException, IOException {
                                 } 
                             }
                             
-                            if( ((ModelView) model).getView() instanceof String && met.getDeclaredAnnotation(Json.class) ==null){
+                            if( ((ModelView) model).getView() instanceof String && (boolean)((ModelView) model).isJson()  ==false){
                                 RequestDispatcher dis = null; 
                                 dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) model).getView()));
                                 dis.forward(req,res);
+                            }
+                        }else{
+                            if(met.getDeclaredAnnotation(Json.class) !=null){
+                                res.setContentType("application/json;charset=UTF-8");
+                                out = res.getWriter();
+                                Gson j = new Gson();
+                                String JSON = j.toJson(model);
+                                out.print(JSON);
                             }
                         }
 
@@ -225,9 +233,9 @@ throws ServletException, IOException {
             }
 
         }
-        if(met.getDeclaredAnnotation(Json.class) ==null ){
-            res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
-           }
+        // if(met.getDeclaredAnnotation(Json.class) ==null ){
+        //     res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
+        //    }
         }
 
         

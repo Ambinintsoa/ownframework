@@ -56,7 +56,13 @@ public class Emp {
         v.setView("emp.jsp");
         return v;
     }
-
+    @Session
+    @Urls(name = "/eeef.fn")
+    @Auth(profile = "admin")
+    @Json
+    public String usesessions(){
+        return "AAA";
+    }
     @Urls(name = "/save.fn")
     public ModelView save(){
         ModelView v = new ModelView();

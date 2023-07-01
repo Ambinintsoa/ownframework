@@ -8,6 +8,7 @@ public class ModelView {
     private HashMap<String,Object> session;
     private boolean invalidateSession;
     private ArrayList<String> removeSession;
+    private boolean isJson;
 
     public HashMap<String, Object> getSession() {
         return session;
@@ -55,6 +56,14 @@ public class ModelView {
 
     public void setInvalidateSession(boolean invalidateSession) {
         this.invalidateSession = invalidateSession;
+    }
+
+    public boolean isJson() {
+        return isJson;
+    }
+
+    public void setJson(boolean isJson) {
+        this.isJson = isJson;
     }
 
 
