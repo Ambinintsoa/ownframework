@@ -83,6 +83,7 @@ throws ServletException, IOException {
 
             Object model  = null;
             String[] values = null;
+            Method met = null;
             Enumeration<String> ressources = req.getParameterNames();
             if(isMutipart(req)){
                 values = new String[1];
@@ -135,11 +136,11 @@ throws ServletException, IOException {
             for (int i = 0; i < created.getClass().getDeclaredMethods().length; i++) {
                 if (map.getMethod().compareToIgnoreCase(created.getClass().getDeclaredMethods()[i].getName())== 0  )
                 {
-
+                    met = created.getClass().getDeclaredMethods()[i];
                     
-                 if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class) !=null){
-                        if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase("ano")!=0){
-                            if(session_request.getAttribute("profile") == null || created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase( session_request.getAttribute("profile").toString())!=0){
+                 if(met.getDeclaredAnnotation(Auth.class) !=null){
+                        if(met.getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase("ano")!=0){
+                            if(session_request.getAttribute("profile") == null || met.getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase( session_request.getAttribute("profile").toString())!=0){
                                 identification = false;
                             }
                         }
@@ -149,7 +150,7 @@ throws ServletException, IOException {
                     }
 
                     if(identification == true){
-                        Annotation annote = created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Session.class);
+                        Annotation annote = met.getDeclaredAnnotation(Session.class);
                         Field sessions = created.getClass().getDeclaredField("session");
                         Enumeration<String> attributes = session_request.getAttributeNames();
                         if(annote!=null &&  sessions !=null && session_request.getAttributeNames() !=null){
@@ -161,18 +162,16 @@ throws ServletException, IOException {
                             
                             created.getClass().getDeclaredMethod(Utils.getSetter("session"), HashMap.class).invoke(created,sess);
                         }
-                        if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class)!=null){
-                            String[] args =created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class).arguments();
+                        if(met.getDeclaredAnnotation(Arguments.class)!=null){
+                            String[] args =met.getDeclaredAnnotation(Arguments.class).arguments();
                             obj = new Object[args.length];
                                         for (int index = 0; index < args.length; index++) {
                                             if(req.getParameter(args[index])!=null){
-                                                obj[index] = Utils.transform(req.getParameter(args[index]), created.getClass().getDeclaredMethods()[i].getParameters()[index].getType());
+                                                obj[index] = Utils.transform(req.getParameter(args[index]), met.getParameters()[index].getType());
                                             }
                                         }
-                                        // out.println(created.getClass().getDeclaredMethods()[i]);
-                                        Method met = created.getClass().getDeclaredMethods()[i];
                                         met.setAccessible(true);
-                                                model = met.invoke(created, obj);
+                                        model = met.invoke(created, obj);
         
                                         
         
@@ -186,7 +185,7 @@ throws ServletException, IOException {
                             if( ((ModelView) model).getData() instanceof HashMap  ){
                                     HashMap<String,Object>data =   ((ModelView) model).getData();
                                     if(data !=null )  {
-                                        if((boolean)(model.getClass().getDeclaredMethod("isJSON",(Class<?>[]) null).invoke(model, (Object[])null))== true){
+                                        if(met.getDeclaredAnnotation(Json.class) !=null){
                                             res.setContentType("application/json;charset=UTF-8");
                                             out = res.getWriter();
                                             Gson j = new Gson();
@@ -209,10 +208,10 @@ throws ServletException, IOException {
                                 } 
                             }
                             
-                            if( ((ModelView) model).getView() instanceof String && (boolean)(model.getClass().getDeclaredMethod("isJSON",(Class<?>[]) null).invoke(model, (Object[])null))!= true ){
+                            if( ((ModelView) model).getView() instanceof String && met.getDeclaredAnnotation(Json.class) ==null){
                                 RequestDispatcher dis = null; 
-                                     dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) model).getView()));
-                             dis.forward(req,res);
+                                dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) model).getView()));
+                                dis.forward(req,res);
                             }
                         }
 
@@ -220,7 +219,7 @@ throws ServletException, IOException {
             }
 
         }
-        if((boolean)(model.getClass().getDeclaredMethod("isJSON",(Class<?>[]) null).invoke(model, (Object[])null))!= true ){
+        if(met.getDeclaredAnnotation(Json.class) ==null ){
             res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
            }
         }
