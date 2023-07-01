@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="ddd.fn" method="post" enctype="multipart/form-data">
+    <form action="eee.fn" method="post" enctype="multipart/form-data">
         <input type="text" name="name">
         <input type="number" name="age">
         <input type="file" name="fi" id="file">
