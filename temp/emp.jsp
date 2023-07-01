@@ -1,4 +1,5 @@
 <%@page import="java.util.*,olona.Emp,etu1864.framework.FileUpload" %>
+<%out.print(((Emp)(request.getAttribute("dg"))).getName());%>
 <!DOCTYPE html>
 <html lang="en">
 <head>

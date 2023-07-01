@@ -17,6 +17,8 @@ import etu1864.framework.Mapping;
 import etu1864.framework.ModelView;
 import etu1864.framework.util.Utils;
 import etu1864.annotation.*;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -61,7 +63,7 @@ throws ServletException, IOException {
     InputStream fileContent = null;
     try {
         // out.println(singleton.get("Emp"));
-
+        HttpSession session_request = req.getSession();
         String key = Utils.getInfo(req.getServletPath());
         out.println(key);
         if(mappingUrls.containsKey(key)){
@@ -69,13 +71,26 @@ throws ServletException, IOException {
             Mapping map = mappingUrls.get(key);
             Class<?> classe = Class.forName(map.getClassName());
             Object created = null;
-            out.print("aaa");
+            
             if(reinitialize(classe.getSimpleName())==false){
                  created = classe.newInstance();
             }else{
                 created = singleton.get(classe.getSimpleName());
             }
-            out.print(created);
+            // out.print(created);
+
+            // complete session attribut of model
+            Annotation annote = created.getClass().getDeclaredAnnotation(Session.class);
+            Field sessions = created.getClass().getDeclaredField("session");
+            Enumeration<String> attributes = session_request.getAttributeNames();
+            if(annote!=null &&  sessions !=null && session_request.getAttributeNames() !=null){
+                HashMap<String,Object> sess = new HashMap<String,Object>();
+                while (attributes.hasMoreElements()) {
+                    String attribut = attributes.nextElement();
+                        sess.put(attribut,session_request.getAttribute(attribut));
+                }
+                created.getClass().getDeclaredMethod(Utils.getSetter("session"), HashMap.class).invoke(created,sess);
+            }
             Object model  = null;
             String[] values = null;
             Enumeration<String> ressources = req.getParameterNames();
@@ -118,7 +133,6 @@ throws ServletException, IOException {
                             if(methods[i].getName().compareTo(Utils.getSetter(ressource))==0 && methods[i].getParameterTypes().length == 1){
                                 if(methods[i].getParameterTypes()[0].getSimpleName().compareToIgnoreCase("FileUpload")!=0 ){
                                     values = req.getParameterValues(ressource);
-                                    
                                     created.getClass().getMethod(Utils.getSetter(ressource),methods[i].getParameterTypes()[0]).invoke(created,Utils.transform(values[0], methods[i].getParameterTypes()[0]));
                                 }
                              }
@@ -131,17 +145,19 @@ throws ServletException, IOException {
             for (int i = 0; i < created.getClass().getDeclaredMethods().length; i++) {
                 if (map.getMethod().compareToIgnoreCase(created.getClass().getDeclaredMethods()[i].getName())== 0  )
                 {
-                    if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class) !=null){
-                        if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase( req.getSession().getAttribute("profile").toString())!=0 && created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase("ano")!=0    ){
-                            identification = false;
+
+                    
+                 if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class) !=null){
+                        if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase("ano")!=0){
+                            if(session_request.getAttribute("profile") == null || created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile().compareToIgnoreCase( session_request.getAttribute("profile").toString())!=0){
+                                identification = false;
+                            }
                         }
-                        if( req.getSession().getAttribute("isConnected") == null ||  req.getSession().getAttribute("isConnected") == "false"){
+                        if( session_request.getAttribute("isConnected") == null ||  session_request.getAttribute("isConnected") == "false"){
                             identification = false;
-                        }
-                        // out.print(req.getSession().getAttribute("isConnected") );
-                        // out.print(req.getSession().getAttribute("profile") );
-                        // out.print(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Auth.class).profile());
                     }
+                    }
+
                     if(identification == true){
                         if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class)!=null){
                             String[] args =created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class).arguments();
@@ -154,15 +170,14 @@ throws ServletException, IOException {
                                         out.println(created.getClass().getDeclaredMethods()[i]);
                                         Method met = created.getClass().getDeclaredMethods()[i];
                                         met.setAccessible(true);
-    
                                                 model = met.invoke(created, obj);
-                                            
-    
+        
                                         
         
                          }else{
                             model= created.getClass().getMethod(map.getMethod()).invoke(created);
                         }
+                       
                     
                         if(model instanceof ModelView){
 
@@ -177,7 +192,6 @@ throws ServletException, IOException {
                             if( ((ModelView) model).getSession() instanceof HashMap  ){
                                 HashMap<String,Object>session =   ((ModelView) model).getSession();
                                 if(session !=null )  {
-                                    HttpSession session_request = req.getSession();
                                     for (Map.Entry<String,Object> entry : session.entrySet()) {
                                         session_request.setAttribute(entry.getKey(),entry.getValue());
                                     }
@@ -238,7 +252,7 @@ private void reset(Object obj )throws Exception{
     for (int i = 0; i < methods.length; i++) {
         for (int j = 0; j < fields.length; j++) {
             if(methods[i].getName().compareToIgnoreCase(Utils.getSetter(fields[j].getName()))==0){
-                methods[i].invoke(obj,Utils.transform(null, methods[i].getParameterTypes()[0]));
+                methods[i].invoke(obj,Utils.transformNUll(methods[i].getParameterTypes()[0]));
             }
         }
         

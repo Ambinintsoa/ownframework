@@ -26,7 +26,7 @@ public class Utils {
     public static Object transform(String value,Class classe){
 
         if(classe.getSimpleName().compareToIgnoreCase("int")==0 || classe.getSimpleName().compareToIgnoreCase("Integer") ==0){
-            return Integer.parseInt(value);
+            return Integer.valueOf(value);
         }
         if(classe.getSimpleName().compareToIgnoreCase("float")==0 || classe.getSimpleName().compareToIgnoreCase("Float") ==0){
             return Float.parseFloat(value);
@@ -39,6 +39,23 @@ public class Utils {
             return Date.valueOf(value);
         }
         return value;
+    }
+    public static Object transformNUll(Class classe){
+
+        if(classe.getSimpleName().compareToIgnoreCase("int")==0 || classe.getSimpleName().compareToIgnoreCase("Integer") ==0){
+            return (Integer)null;
+        }
+        if(classe.getSimpleName().compareToIgnoreCase("float")==0 || classe.getSimpleName().compareToIgnoreCase("Float") ==0){
+            return (Float)null;
+        }
+
+        if(classe.getSimpleName().compareToIgnoreCase("double")==0 || classe.getSimpleName().compareToIgnoreCase("Double") ==0){
+            return (Double)null;
+        }
+        if(classe.getSimpleName().compareToIgnoreCase("Date")==0 ){
+            return (Date)null;
+        }
+        return null;
     }
     public static String method(Object obj , String methods){
         Method[] meth = obj.getClass().getDeclaredMethods();

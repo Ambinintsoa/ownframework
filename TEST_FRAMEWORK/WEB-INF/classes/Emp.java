@@ -9,9 +9,17 @@ import etu1864.framework.ModelView;
 import java.util.ArrayList;
 import etu1864.annotation.*;
 @Scope(singleton = true)
+@Session
 public class Emp {
     private String name;
-    // private int age ;
+    private HashMap<String,Object> session;
+    private Integer age ;
+    public HashMap<String, Object> getSession() {
+        return session;
+    }
+    public void setSession(HashMap<String, Object> session) {
+        this.session = session;
+    }
     private FileUpload fi;
     public Emp() {
     }
@@ -31,6 +39,20 @@ public class Emp {
         v.setView("emp.jsp");
         return v;
     }
+
+    @Urls(name = "/eee.fn")
+    @Auth(profile = "admin")
+    public ModelView usesession(){
+        ModelView v = new ModelView();
+        v.setData(new HashMap<String,Object>());
+       
+       Emp  a = new Emp((String)this.getSession().get("name"));
+        v.addItem("dg",a);
+        v.addItem("file", this.getFi());
+        v.setView("emp.jsp");
+        return v;
+    }
+
     @Urls(name = "/save.fn")
     public ModelView save(){
         ModelView v = new ModelView();
@@ -57,12 +79,7 @@ public class Emp {
     public void setName(String name) {
         this.name = name;
     }
-    // public int getAge() {
-    //     return age;
-    // }
-    // public void setAge(int age) {
-    //     this.age = age;
-    // }
+
     public FileUpload getFi() {
         return fi;
     }
@@ -79,6 +96,12 @@ public class Emp {
         mv.addSession("name", name);
         mv.setView("emp.jsp");
         return mv;
+    }
+    public Integer getAge() {
+        return age;
+    }
+    public void setAge(Integer age) {
+        this.age = age;
     }
     
 }
