@@ -181,7 +181,13 @@ throws ServletException, IOException {
                        
                     
                         if(model instanceof ModelView){
-
+                            if((boolean)((ModelView) model).isInvalidateSession() == true){
+                                for (String sessionString : ((ModelView) model).getRemoveSession()) {
+                                   
+                                    session_request.removeAttribute(sessionString);
+                                   
+                                }
+                            }
                             if( ((ModelView) model).getData() instanceof HashMap  ){
                                     HashMap<String,Object>data =   ((ModelView) model).getData();
                                     if(data !=null )  {
