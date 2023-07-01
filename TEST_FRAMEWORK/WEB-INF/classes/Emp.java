@@ -9,7 +9,7 @@ import etu1864.framework.ModelView;
 import java.util.ArrayList;
 import etu1864.annotation.*;
 @Scope(singleton = true)
-@Session
+
 public class Emp {
     private String name;
     private HashMap<String,Object> session;
@@ -39,11 +39,12 @@ public class Emp {
         v.setView("emp.jsp");
         return v;
     }
-
+    @Session
     @Urls(name = "/eee.fn")
     @Auth(profile = "admin")
     public ModelView usesession(){
         ModelView v = new ModelView();
+        v.setJSON(true);
         v.setData(new HashMap<String,Object>());
        
        Emp  a = new Emp((String)this.getSession().get("name"));

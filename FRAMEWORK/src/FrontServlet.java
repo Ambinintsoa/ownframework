@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.RequestDispatcher;
-
+import com.google.gson.Gson;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +65,7 @@ throws ServletException, IOException {
         // out.println(singleton.get("Emp"));
         HttpSession session_request = req.getSession();
         String key = Utils.getInfo(req.getServletPath());
-        out.println(key);
+        // out.println(key);
         if(mappingUrls.containsKey(key)){
             Collection<Part> val = null;
             Mapping map = mappingUrls.get(key);
@@ -80,17 +80,7 @@ throws ServletException, IOException {
             // out.print(created);
 
             // complete session attribut of model
-            Annotation annote = created.getClass().getDeclaredAnnotation(Session.class);
-            Field sessions = created.getClass().getDeclaredField("session");
-            Enumeration<String> attributes = session_request.getAttributeNames();
-            if(annote!=null &&  sessions !=null && session_request.getAttributeNames() !=null){
-                HashMap<String,Object> sess = new HashMap<String,Object>();
-                while (attributes.hasMoreElements()) {
-                    String attribut = attributes.nextElement();
-                        sess.put(attribut,session_request.getAttribute(attribut));
-                }
-                created.getClass().getDeclaredMethod(Utils.getSetter("session"), HashMap.class).invoke(created,sess);
-            }
+
             Object model  = null;
             String[] values = null;
             Enumeration<String> ressources = req.getParameterNames();
@@ -159,6 +149,18 @@ throws ServletException, IOException {
                     }
 
                     if(identification == true){
+                        Annotation annote = created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Session.class);
+                        Field sessions = created.getClass().getDeclaredField("session");
+                        Enumeration<String> attributes = session_request.getAttributeNames();
+                        if(annote!=null &&  sessions !=null && session_request.getAttributeNames() !=null){
+                            HashMap<String,Object> sess = new HashMap<String,Object>();
+                            while (attributes.hasMoreElements()) {
+                                String attribut = attributes.nextElement();
+                                    sess.put(attribut,session_request.getAttribute(attribut));
+                            }
+                            
+                            created.getClass().getDeclaredMethod(Utils.getSetter("session"), HashMap.class).invoke(created,sess);
+                        }
                         if(created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class)!=null){
                             String[] args =created.getClass().getDeclaredMethods()[i].getDeclaredAnnotation(Arguments.class).arguments();
                             obj = new Object[args.length];
@@ -167,7 +169,7 @@ throws ServletException, IOException {
                                                 obj[index] = Utils.transform(req.getParameter(args[index]), created.getClass().getDeclaredMethods()[i].getParameters()[index].getType());
                                             }
                                         }
-                                        out.println(created.getClass().getDeclaredMethods()[i]);
+                                        // out.println(created.getClass().getDeclaredMethods()[i]);
                                         Method met = created.getClass().getDeclaredMethods()[i];
                                         met.setAccessible(true);
                                                 model = met.invoke(created, obj);
@@ -184,10 +186,19 @@ throws ServletException, IOException {
                             if( ((ModelView) model).getData() instanceof HashMap  ){
                                     HashMap<String,Object>data =   ((ModelView) model).getData();
                                     if(data !=null )  {
-                                        for (Map.Entry<String,Object> entry : data.entrySet()) {
-                                            req.setAttribute(entry.getKey(),entry.getValue());
+                                        if((boolean)(model.getClass().getDeclaredMethod("isJSON",(Class<?>[]) null).invoke(model, (Object[])null))== true){
+                                            res.setContentType("application/json;charset=UTF-8");
+                                            out = res.getWriter();
+                                            Gson j = new Gson();
+                                            String JSON = j.toJson(data);
+                                            out.print(JSON);
+                                        }else{
+                                            for (Map.Entry<String,Object> entry : data.entrySet()) {
+                                                req.setAttribute(entry.getKey(),entry.getValue());
+                                            }
                                         }
                                     } 
+
                             } 
                             if( ((ModelView) model).getSession() instanceof HashMap  ){
                                 HashMap<String,Object>session =   ((ModelView) model).getSession();
@@ -198,10 +209,9 @@ throws ServletException, IOException {
                                 } 
                             }
                             
-                            if( ((ModelView) model).getView() instanceof String  ){
+                            if( ((ModelView) model).getView() instanceof String && (boolean)(model.getClass().getDeclaredMethod("isJSON",(Class<?>[]) null).invoke(model, (Object[])null))!= true ){
                                 RequestDispatcher dis = null; 
                                      dis = req.getRequestDispatcher( String.format("/%s", ((ModelView) model).getView()));
-                              
                              dis.forward(req,res);
                             }
                         }
@@ -210,13 +220,16 @@ throws ServletException, IOException {
             }
 
         }
-            
+        if((boolean)(model.getClass().getDeclaredMethod("isJSON",(Class<?>[]) null).invoke(model, (Object[])null))!= true ){
+            res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
+           }
         }
-           res.sendRedirect(String.format("%s/error.jsp", req.getContextPath()));
+
         
     } catch (Exception e) {
         // TODO: handle 
         out.println(e);
+        
     }
     finally {
         if (outs != null) {
