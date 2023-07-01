@@ -42,9 +42,9 @@ public class Emp {
     @Session
     @Urls(name = "/eee.fn")
     @Auth(profile = "admin")
+    @Json
     public ModelView usesession(){
         ModelView v = new ModelView();
-        v.setJSON(true);
         v.setData(new HashMap<String,Object>());
        
        Emp  a = new Emp((String)this.getSession().get("name"));
