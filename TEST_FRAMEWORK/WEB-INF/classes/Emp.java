@@ -42,13 +42,16 @@ public class Emp {
     @Session
     @Urls(name = "/eee.fn")
     @Auth(profile = "admin")
-    @Json
+    // @Json
     public ModelView usesession(){
         ModelView v = new ModelView();
         v.setData(new HashMap<String,Object>());
-       
        Emp  a = new Emp((String)this.getSession().get("name"));
         v.addItem("dg",a);
+        v.setInvalidateSession(true);
+        ArrayList list = new ArrayList<>();
+        list.add("name");
+        v.setRemoveSession(list);
         v.addItem("file", this.getFi());
         v.setView("emp.jsp");
         return v;
