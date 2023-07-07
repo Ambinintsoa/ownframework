@@ -30,7 +30,7 @@
        
       </tbody>
     </table>
-    <h2>nouceau employé</h2>
+    <h2>nouveau employé</h2>
     <table class="table">
         <thead>
           <tr>

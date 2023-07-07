@@ -5,6 +5,8 @@ Ce guide pratique vous aidera à créer votre propre framework étape par étape
 ## Documentation
 
 Le framework utilise servlet-api.jar. Assurez-vous de l'avoir importé dans votre projet.
+Le framework utilise Gson.jar. Assurez-vous de l'avoir importé dans votre projet.
+
 
 ## Prise en main
 
@@ -109,6 +111,9 @@ Ajoutez l'annotation @Session à chaque fonction qui utilise la session. Assurez
 ### Annotation pour une catégorie de personne spécifique
 
 Utilisez l'annotation @Auth(profile = "profile") pour spécifier que la méthode est réservée à une catégorie de personnes spécifique.
+
+### SINGLETON
+Pour transformer votre classe en Singleton, utiliser l'annotation @Scope(singleton = true)
 
  ### JSON
 
