@@ -14,7 +14,7 @@ import etu1864.framework.Mapping;
 import java.io.*;
 import java.net.URL;
 public class Scan {
-
+//research classes in repositories
     public static void initUrls(String packageName,HashMap<String,Mapping> datas,HashMap<String,Object>singleton) throws Exception {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             List<Class<?>> classes = new LinkedList<>();
@@ -36,7 +36,7 @@ public class Scan {
                         throw e;
                     }
     }
-
+//find all classes in repositories
     private static List<Class<?>> findClasses(File directory, String packageName,HashMap<String,Mapping> datas,HashMap<String,Object>singleton) throws ClassNotFoundException,Exception {
         List<Class<?>> classes = new LinkedList<>();
         if (!directory.exists()) {
@@ -57,6 +57,7 @@ public class Scan {
         Scan.verif(classes,datas,singleton);
         return classes;
     }
+    //verif for all classes
     private static void verif(List<Class<?>> list,HashMap<String,Mapping> datas,HashMap<String,Object>singleton)throws Exception{
         for(int i = 0 ; i< list.size();i++){
                 Scan.getUrlMatching(list.get(i),datas,singleton);
@@ -64,8 +65,11 @@ public class Scan {
 
     }
     
+
+    //save all url of the method in class
     public static void getUrlMatching(Class classe,HashMap<String,Mapping> datas,HashMap<String,Object>singleton)throws Exception{ //find url and method 
-    if(classe.getAnnotation(Scope.class)!=null){
+    //verify if the classs is singleton
+        if(classe.getAnnotation(Scope.class)!=null){
         singleton.put(classe.getSimpleName(),classe.newInstance());
     }
     for(Method f : classe.getDeclaredMethods()){ //take method's annotation

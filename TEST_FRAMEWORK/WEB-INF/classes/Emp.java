@@ -26,56 +26,6 @@ public class Emp {
     public Emp(String name) {
         this.name = name;
     }
-
-    @Urls(name = "/ddd.fn")
-    @Auth(profile = "admin")
-    public ModelView bidon(){
-        ModelView v = new ModelView();
-        v.setData(new HashMap<String,Object>());
-        ArrayList<Emp> a = new ArrayList<Emp>();
-        a.add(new Emp(this.getName()));
-        v.addItem("dg",a);
-        v.addItem("file", this.getFi());
-        v.setView("emp.jsp");
-        return v;
-    }
-    @Session
-    @Urls(name = "/eee.fn")
-    @Auth(profile = "admin")
-    // @Json
-    public ModelView usesession(){
-        ModelView v = new ModelView();
-        v.setData(new HashMap<String,Object>());
-       Emp  a = new Emp((String)this.getSession().get("name"));
-        v.addItem("dg",a);
-        v.setInvalidateSession(true);
-        ArrayList list = new ArrayList<>();
-        list.add("name");
-        v.setRemoveSession(list);
-        v.addItem("file", this.getFi());
-        v.setView("emp.jsp");
-        return v;
-    }
-
-    @Urls(name = "/save.fn")
-    public ModelView save(){
-        ModelView v = new ModelView();
-        v.setData(new HashMap<String,Object>());
-        v.addItem("employe", this);
-        v.setView("new.jsp");
-        return v;
-    }
-    @Urls(name = "/saved.fn" )
-    @Arguments(arguments = {"id","name"})
-    public ModelView saved(Integer id,String name){
-        ModelView v = new ModelView();
-        v.setData(new HashMap<String,Object>());
-        ArrayList<Emp> a = new ArrayList<Emp>();
-        a.add(new Emp(name));
-        v.addItem("dg",a);
-        v.setView("emp.jsp");
-        return v;
-    }
     public String getName() {
         return name;
     }
@@ -90,6 +40,116 @@ public class Emp {
     public void setFi(FileUpload file) {
         this.fi = file;
     }
+    public Integer getAge() {
+        return age;
+    }
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    @Urls(name = "/ddd.fn")
+    @Auth(profile = "admin")
+    public ModelView bidon(){
+        ModelView v = new ModelView();
+        v.setData(new HashMap<String,Object>());
+        ArrayList<Emp> a = new ArrayList<Emp>();
+        a.add(new Emp(this.getName()));
+        v.addItem("dg",a);
+        v.addItem("file", this.getFi());
+        v.setView("emp.jsp");
+        return v;
+    }
+    //delete one attribute of the session
+    @Session
+    @Urls(name = "/delete.fn")
+    @Auth(profile = "admin")
+    public ModelView deletesession(){
+        ModelView v = new ModelView();
+        v.setInvalidateSession(true);
+        ArrayList list = new ArrayList<>();
+        list.add("name");
+        v.setRemoveSession(list);
+        v.setView("index.jsp");
+        return v;
+    }
+
+    //invalidate the session
+    @Urls(name = "/invalidate.fn")
+    @Auth(profile = "admin")
+    public ModelView invalidatesession(){
+        ModelView v = new ModelView();
+        v.setInvalidateSession(true);
+        v.setView("index.jsp");
+        return v;
+    }
+
+
+    
+    //upload file
+    @Urls(name = "/file.fn")
+    public ModelView file(){
+        ModelView v = new ModelView();
+        v.setData(new HashMap<String,Object>());
+        v.addItem("file", this.getFi());
+        v.setView("file.jsp");
+        return v;
+    }
+
+
+    //json by annotation & annotation session
+    @Json
+    @Session
+    @Urls(name = "/random.fn")
+    public Emp random_employe_annotation(){
+        return new Emp(session.get("name").toString());
+    }
+
+    //json by modelView
+    @Urls(name = "/random_model.fn")
+    public ModelView random_employe_ModelView(){
+        ModelView v = new ModelView();
+        v.setData(new HashMap<String,Object>());
+        v.addItem("emp",new Emp("random by modelview"));
+        v.setJson(true);
+        return v;
+    }
+    //save the name of employe
+    @Urls(name = "/save.fn")
+    @Arguments(arguments = {"nom"})
+    public ModelView save(String nom){
+        ModelView v = new ModelView();
+        v.setData(new HashMap<String,Object>());
+        this.setName(nom);
+        v.addItem("new_employe", this);
+        v.setView("emp.jsp");
+        return v;
+    }
+
+    //save the name of employe
+    @Urls(name = "/save_without.fn")
+    public ModelView save_attribut(){
+        ModelView v = new ModelView();
+        v.setData(new HashMap<String,Object>());
+        v.addItem("new_employe", new Emp(this.getName()));
+        v.setView("emp.jsp");
+        return v;
+    }
+//list of employe
+    @Urls(name = "/liste.fn" )
+    public ModelView list(){
+        ModelView v = new ModelView();
+        v.setData(new HashMap<String,Object>());
+        ArrayList<Emp> a = new ArrayList<Emp>();
+        a.add(new Emp("Jeanne"));
+        a.add(new Emp("Philippe"));
+        a.add(new Emp("STeff"));
+        v.addItem("employe",a);
+        v.setView("emp.jsp");
+        return v;
+    }
+
+
+    //connect user
     @Urls(name = "/log_in.fn" )
     @Arguments(arguments = {"name","password"})
     public ModelView log_in(String name,String password){
@@ -98,14 +158,9 @@ public class Emp {
         mv.addSession("isConnected", true);
         mv.addSession("profile", "admin");
         mv.addSession("name", name);
-        mv.setView("emp.jsp");
+        mv.setView("Welcome.jsp");
         return mv;
     }
-    public Integer getAge() {
-        return age;
-    }
-    public void setAge(Integer age) {
-        this.age = age;
-    }
+
     
 }
