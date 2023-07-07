@@ -31,6 +31,7 @@ do
     fi
 done
     cp "."/*.jsp  "../temp"/ 
+    cp -r "./assets" "../temp"/ 
     cp "WEB-INF"/*.xml  "../temp/WEB-INF"/ 
     cp -r "WEB-INF/lib"  "../temp/WEB-INF"/ 
     cd ../temp/
